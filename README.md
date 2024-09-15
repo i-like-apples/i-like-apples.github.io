@@ -3,61 +3,45 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Take a Photo</title>
-    <style>
-        #photo-box {
-            width: 300px;
-            height: 200px;
-            border: 2px dashed #ccc;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            cursor: pointer;
-            text-align: center;
-        }
-
-        #photo-box img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            display: none; /* Initially, the image will be hidden */
-        }
-    </style>
+    <title>Camera Input Example</title>
 </head>
 <body>
 
-<div id="photo-box">
-    <p id="placeholder-text">Click to take a photo</p>
-    <img id="photo-preview" alt="Photo Preview">
-    <input type="file" id="file-input" accept="image/*" capture="camera" style="display:none;">
-</div>
+<h2>Upload or Capture an Image</h2>
+
+<!-- Input field for image selection or camera capture -->
+<input type="file" accept="image/*" capture="camera" id="cameraInput">
+
+<!-- Preview for the uploaded image -->
+<img id="preview" style="display:none; max-width: 100%; height: auto; margin-top: 10px;">
 
 <script>
-    const photoBox = document.getElementById('photo-box');
-    const fileInput = document.getElementById('file-input');
-    const photoPreview = document.getElementById('photo-preview');
-    const placeholderText = document.getElementById('placeholder-text');
+    // Get the input and preview elements
+    const cameraInput = document.getElementById('cameraInput');
+    const preview = document.getElementById('preview');
 
-    // When the box is clicked, trigger the file input
-    photoBox.addEventListener('click', () => {
-        fileInput.click();
-    });
-
-    // When a photo is selected/taken, display it in the box
-    fileInput.addEventListener('change', (event) => {
+    // Add event listener for when an image is selected
+    cameraInput.addEventListener('change', function(event) {
         const file = event.target.files[0];
+
         if (file) {
             const reader = new FileReader();
+
             reader.onload = function(e) {
-                // Hide the placeholder text and show the image preview
-                placeholderText.style.display = 'none';
-                photoPreview.style.display = 'block';
-                photoPreview.src = e.target.result;
+                // Set the preview image src to the file's data URL
+                preview.src = e.target.result;
+                preview.style.display = 'block';
             };
-            reader.readAsDataURL(file); // Read the photo as a Data URL to display it
+
+            // Read the file as a data URL
+            reader.readAsDataURL(file);
         }
     });
 </script>
 
 </body>
 </html>
+
+
+
+
