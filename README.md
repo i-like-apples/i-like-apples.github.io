@@ -3,45 +3,56 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Camera Input Example</title>
+    <title>Camera Access Example</title>
 </head>
 <body>
 
-<h2>Upload or Capture an Image</h2>
+<h2>Capture an Image with Your Camera</h2>
 
-<!-- Input field for image selection or camera capture -->
-<input type="file" accept="image/*" capture="camera" id="cameraInput">
+<!-- Video element to display the live camera feed -->
+<video id="cameraStream" width="320" height="240" autoplay></video>
 
-<!-- Preview for the uploaded image -->
-<img id="preview" style="display:none; max-width: 100%; height: auto; margin-top: 10px;">
+<!-- Button to capture the current frame from the video -->
+<button id="captureButton">Capture</button>
+
+<!-- Canvas to hold the captured image -->
+<canvas id="canvas" width="320" height="240" style="display:none;"></canvas>
+
+<!-- Preview for the captured image -->
+<img id="preview" style="max-width: 100%; height: auto; margin-top: 10px;">
 
 <script>
-    // Get the input and preview elements
-    const cameraInput = document.getElementById('cameraInput');
+    const video = document.getElementById('cameraStream');
+    const canvas = document.getElementById('canvas');
+    const context = canvas.getContext('2d');
+    const captureButton = document.getElementById('captureButton');
     const preview = document.getElementById('preview');
 
-    // Add event listener for when an image is selected
-    cameraInput.addEventListener('change', function(event) {
-        const file = event.target.files[0];
+    // Function to request camera access and stream the video
+    function startCamera() {
+        navigator.mediaDevices.getUserMedia({ video: true })
+        .then(function(stream) {
+            video.srcObject = stream;
+        })
+        .catch(function(error) {
+            console.error("Error accessing the camera: ", error);
+        });
+    }
 
-        if (file) {
-            const reader = new FileReader();
+    // Capture button event listener
+    captureButton.addEventListener('click', function() {
+        // Draw the current video frame to the canvas
+        context.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-            reader.onload = function(e) {
-                // Set the preview image src to the file's data URL
-                preview.src = e.target.result;
-                preview.style.display = 'block';
-            };
-
-            // Read the file as a data URL
-            reader.readAsDataURL(file);
-        }
+        // Convert the canvas image to a data URL and display it
+        const imageDataURL = canvas.toDataURL('image/png');
+        preview.src = imageDataURL;
     });
+
+    // Start the camera stream when the page loads
+    window.addEventListener('load', startCamera);
 </script>
 
 </body>
 </html>
-
-
-
 
